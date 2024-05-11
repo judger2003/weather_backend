@@ -667,37 +667,24 @@ def notice_content(request):
 
 def notice_state(request):
     if request.method == "POST":
+        # id = request.POST.get("id")
+        # state = request.POST.get("state")
+        id = request.GET.get("id")
+        state = request.GET.get("state")
         try:
-            admin = User.objects.get(id=request.session['userid'])
+            id = int(id)
+            notice = Notice.objects.get(id=id)
         except Exception:
             return JsonResponse({
-                "code": 100,
-                "msg": "未登录",
+                "code": 101,
+                "msg": "id错误",
             })
-        if True:
-            # id = request.POST.get("id")
-            # state = request.POST.get("state")
-            id = request.GET.get("id")
-            state = request.GET.get("state")
-            try:
-                id = int(id)
-                notice = Notice.objects.get(id=id)
-            except Exception:
-                return JsonResponse({
-                    "code": 101,
-                    "msg": "id错误",
-                })
-            notice.read = state == "已读"
-            notice.save(update_fields=["read"])
-            return JsonResponse({
-                "code": 20000,
-                "msg": "公告状态更改为%s" % state
-            })
-        else:
-            return JsonResponse({
-                "code": 100,
-                "msg": "非管理员用户",
-            })
+        notice.read = state == "已读"
+        notice.save(update_fields=["read"])
+        return JsonResponse({
+            "code": 20000,
+            "msg": "公告状态更改为%s" % state
+        })
 
 
 def delete_notice(request):
