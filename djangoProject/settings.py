@@ -102,7 +102,7 @@ TIME_ZONE = "Asia/Shanghai"
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False # 存入本地时间
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -117,6 +117,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_HOST_USER = 'weather_buaase@163.com'
+EMAIL_HOST_PASSWORD = 'BNLLXGCJCUUUHPXJ'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 25
+EMAIL_FROM = '天气系统'
+EMAIL_EXPIRE = 30
 
 MY_DIC = {
     110000: 54398,
