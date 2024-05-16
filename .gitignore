@@ -7,3 +7,4 @@ app1/migrations
 *.log
 static
 staticfiles
+djangoProject/settings.py
