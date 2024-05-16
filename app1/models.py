@@ -6,7 +6,7 @@ from django.db import models
 class User(models.Model):
     name = models.CharField(max_length=18, null=False, unique=True)
     password = models.CharField(max_length=100, null=False)
-    avatar = models.CharField(max_length=200, default='static/default.png')
+    avatar = models.CharField(max_length=200, default='back_static/avatars/default.png')
     phone = models.CharField(max_length=15, null=True)
     email = models.CharField(max_length=40,null=False,unique=True)
     isAdmin = models.BooleanField(default=False)

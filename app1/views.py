@@ -398,14 +398,14 @@ def user_avatar(request):
                 "msg": "无文件上传"
             })
         file_type = file.name.split('.')[-1]
-        file_path = os.path.join(settings.MEDIA_ROOT, "avatars\\{}_avatar.{}".format(user.id, file_type))
+        file_path = os.path.join(settings.STATIC_ROOT, "avatars\\{}_avatar.{}".format(user.id, file_type))
 
         with open(file_path, "ab") as fp:
             for part in file.chunks():
                 fp.write(part)
                 fp.flush()
 
-        user.avatar = os.path.join(settings.MEDIA_ROOT, "avatar/{}_avatar.{}".format(user.id, file_type))
+        user.avatar = "/back_static/avatars/{}_avatar.{}".format(user.id, file_type)
         user.save(update_fields=["avatar"])
         return JsonResponse({
             "code": 20000,

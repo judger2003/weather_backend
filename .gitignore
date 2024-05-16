@@ -3,3 +3,7 @@
 *.sqlite3
 __pycache__
 key
+app1/migrations
+*.log
+static
+staticfiles
