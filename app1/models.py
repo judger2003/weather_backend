@@ -8,7 +8,7 @@ class User(models.Model):
     password = models.CharField(max_length=100, null=False)
     avatar = models.CharField(max_length=200, default='static/default.png')
     phone = models.CharField(max_length=15, null=True)
-    email = models.CharField(max_length=40,null=False,unique=False)
+    email = models.CharField(max_length=40,null=False,unique=True)
     isAdmin = models.BooleanField(default=False)
     cities = models.CharField(max_length=500, null=True, default='')
 
