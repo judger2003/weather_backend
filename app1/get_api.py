@@ -1,7 +1,7 @@
 import requests
 import csv
 import json
-import adcode2loc
+#import adcode2loc
 
 def get_weather_data(location, api_key):
     try:
@@ -81,7 +81,7 @@ def get_coordinates_from_file(adcode):
 
 def main(adcodes, api_key):
     weather_data_list = []
-
+    print("1/n")
     for adcode in adcodes:
         loc = get_coordinates_from_file(adcode)
         if loc == "Unknown adcode":
@@ -111,10 +111,11 @@ def main(adcodes, api_key):
                 weather_data["cloud"]
             ]
         })
-
+    print("1/n")
+    print(weather_data_list)
     result = {
-        "code": 62,
-        "msg": "officia",
+        "code": 20000,
+        "msg": "success",
         "data": {
             "weather": weather_data_list
         }

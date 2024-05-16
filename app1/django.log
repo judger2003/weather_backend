@@ -1,0 +1,49 @@
+ERROR 2024-05-16 17:27:48,453 log Internal Server Error: /getCityData
+Traceback (most recent call last):
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/appfile/backend/djangoProject/./app1/views.py", line 792, in getCityData
+    import get_api
+ModuleNotFoundError: No module named 'get_api'
+ERROR 2024-05-16 17:32:17,792 log Internal Server Error: /getCityData
+Traceback (most recent call last):
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/appfile/backend/djangoProject/./app1/views.py", line 792, in getCityData
+    import get_api
+ModuleNotFoundError: No module named 'get_api'
+ERROR 2024-05-16 17:35:38,395 log Internal Server Error: /getCityData
+Traceback (most recent call last):
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/appfile/backend/djangoProject/./app1/views.py", line 792, in getCityData
+    import get_api
+ModuleNotFoundError: No module named 'get_api'
+ERROR 2024-05-16 17:36:24,701 log Internal Server Error: /getCityData
+Traceback (most recent call last):
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/appfile/backend/djangoProject/./app1/views.py", line 792, in getCityData
+    from . import get_api
+  File "/home/appfile/backend/djangoProject/./app1/get_api.py", line 1, in <module>
+    import requests
+ModuleNotFoundError: No module named 'requests'
+ERROR 2024-05-16 17:37:57,140 log Internal Server Error: /getCityData
+Traceback (most recent call last):
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/root/anaconda3/envs/weather/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/appfile/backend/djangoProject/./app1/views.py", line 792, in getCityData
+    from . import get_api
+  File "/home/appfile/backend/djangoProject/./app1/get_api.py", line 4, in <module>
+    import adcode2loc
+ModuleNotFoundError: No module named 'adcode2loc'

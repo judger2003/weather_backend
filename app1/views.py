@@ -785,34 +785,33 @@ def getCityData(request):
                 "msg": "未登录",
                 "data": None
             })
-        adcodes = request.GET.get("adcodes")
+        adcodes = request.GET.getlist('adcodes[]')
+        print(adcodes)
         #type = request.POST.get("type")
         #date = request.POST.get("date").split('-')
-        import get_api
+        from . import get_api
+        
         api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'
         # 替换为你的帐号和密码
         #user_id = "<你的帐号>"
         #password = "<你的密码>"
-        params = {
-            ''''"userId": user_id,
+        '''params = {
+            "userId": user_id,
             "pwd": password,
             "dataFormat": "json",
             "interfaceId": "getSurfEleByTimeRangeAndStaID",
             "dataCode": "SURF_CHN_MUL_HOR_3H",
             "timeRange": "<时间范围>",
             "staIDs": "<台站列表>",
-            "elements": "Station_Id_C,Year,Mon,Day,Hour,<要素列表>"'''
+            "elements": "Station_Id_C,Year,Mon,Day,Hour,<要素列表>"
             "weather": get_api.main(adcodes,api_key)
         }
-
+        print(params)'''
         # 发起API请求
         # response = requests.get(url, params=params)
-
-        return JsonResponse({
-            "code": 200,
-            "msg": "success",
-            "data": params
-        })
+        result = get_api.main(adcodes,api_key)
+        print(result)
+        return JsonResponse(result)
 
 
 def send_code(email, sendType, sendTime):
