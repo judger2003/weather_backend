@@ -1,9 +1,12 @@
 import os
+import string
+import random
+import datetime
 
-from django.contrib.sites import requests
 from django.http import JsonResponse
 from app1.models import *
 from django.template.context_processors import csrf
+from django.core.mail import send_mail
 
 import time
 
@@ -30,11 +33,29 @@ def post_csrf(request):
         })
 
 
+def checkVerifyCode(email, verifyCode, sendType):
+    try:
+        emailVerify = EmailVerify.objects.get(email=email)
+        sendTime = emailVerify.sendTime
+        if sendTime + datetime.timedelta(minutes=settings.EMAIL_EXPIRE) < datetime.datetime.now():
+            emailVerify.delete()
+            return False, "验证码过期"
+        else:
+            if verifyCode == emailVerify.code and sendType == emailVerify.sendType:
+                emailVerify.delete()
+                return True, "验证成功"
+            else:
+                return False, "验证码错误"
+    except EmailVerify.DoesNotExist:
+        return False, "请先发送验证码"
+
+
 def register(request):
     name = request.POST.get('username')
     password = request.POST.get('password')
     email = request.POST.get('email')
     phone = request.POST.get('phone')
+    verifyCode = request.POST.get('verifyCode')
 
     # 判断name是否已存在
     users = User.objects.filter(name=name)
@@ -45,22 +66,26 @@ def register(request):
                 "msg": "用户名已存在",
             }
         )
-
-    user = User()
-    user.name = name
-    user.password = password  # TODO：md5加密
-    if email:
+    verified, msg = checkVerifyCode(email, verifyCode, 'register')
+    if verified:
+        user = User()
+        user.name = name
+        user.password = password  # TODO：md5加密
         user.email = email
-    if phone:
-        user.phone = phone
-    user.save()
-
-    return JsonResponse(
-        {
-            "code": 20000,
-            "msg": "注册成功",
-        }
-    )
+        if phone:
+            user.phone = phone
+        user.save()
+        return JsonResponse(
+            {
+                "code": 20000,
+                "msg": "注册成功",
+            }
+        )
+    else:
+        return JsonResponse({
+            "code": 100,
+            "msg": msg
+        })
 
 
 def login(request):
@@ -761,4 +786,44 @@ def getCityData(request):
             "code": 20000,
             "msg": "success",
             "data": None
+        })
+
+
+def sendVerifyCode(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        sendType = request.POST.get('sendType')
+        sendTime = datetime.datetime.now()
+        try:
+            User.objects.get(email=email)
+        except Exception:
+            code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+            try:
+                # 主题, 内容, 发送者, 接收方(多个, 错误相关
+                send_mail("邮箱绑定",
+                          f"您好, 验证码为{code}, 请在网站上输入此验证码, 有效期为{settings.EMAIL_EXPIRE}分钟。如果本封邮件非您本人触发, 请忽略。",
+                          settings.EMAIL_HOST_USER, [email], fail_silently=False)
+                try:
+                    emailVerify = EmailVerify.objects.get(email=email)
+                    emailVerify.code = code
+                    emailVerify.sendType = sendType
+                except Exception:
+                    emailVerify = EmailVerify()
+                    emailVerify.code = code
+                    emailVerify.email = email
+                    emailVerify.sendType = sendType
+                emailVerify.sendTime = sendTime
+                emailVerify.save()
+            except Exception:
+                return JsonResponse({
+                    "code": 100,
+                    "msg": "发送邮件错误"
+                })
+            return JsonResponse({
+                "code": 20000,
+                "msg": "验证码已发送，请注意查收"
+            })
+        return JsonResponse({
+            "code": 100,
+            "msg": "邮箱已被使用"
         })

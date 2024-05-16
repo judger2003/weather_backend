@@ -31,5 +31,7 @@ urlpatterns = [
 
     path('getCityData', getCityData),
 
+    path('verifyCode', sendVerifyCode),
+
     path("admin/", admin.site.urls),
 ]
