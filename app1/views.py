@@ -786,28 +786,23 @@ def getCityData(request):
                 "data": None
             })
         adcodes = request.POST.get("adcodes")
-        type = request.POST.get("type")
-        date = request.POST.get("date").split('-')
-        year = int(date[0])
-        month = int(date[1])
-        day = int(date[2])
-        hour = int(date[3])
-
+        #type = request.POST.get("type")
+        #date = request.POST.get("date").split('-')
+        import get_api
+        api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'
         # 替换为你的帐号和密码
-        user_id = "<你的帐号>"
-        password = "<你的密码>"
-
-        # 构造API请求参数
-        url = "http://api.data.cma.cn:8090/api"
+        #user_id = "<你的帐号>"
+        #password = "<你的密码>"
         params = {
-            "userId": user_id,
+            ''''"userId": user_id,
             "pwd": password,
             "dataFormat": "json",
             "interfaceId": "getSurfEleByTimeRangeAndStaID",
             "dataCode": "SURF_CHN_MUL_HOR_3H",
             "timeRange": "<时间范围>",
             "staIDs": "<台站列表>",
-            "elements": "Station_Id_C,Year,Mon,Day,Hour,<要素列表>"
+            "elements": "Station_Id_C,Year,Mon,Day,Hour,<要素列表>"'''
+            "weather":get_api.main(adcodes,api_key)
         }
 
         # 发起API请求
@@ -816,7 +811,7 @@ def getCityData(request):
         return JsonResponse({
             "code": 20000,
             "msg": "success",
-            "data": None
+            "data": params
         })
 
 

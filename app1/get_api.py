@@ -63,10 +63,69 @@ def get_weather_data(location, api_key):
         return None
 
 
+def get_coordinates_from_file(adcode):
+    adcode_center_map = {}
+    file_path = "D:\\appfile\pythonfile\weather_backend\\app1\centers (1).txt"
+    with open(file_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            line = line.strip()
+            if line:
+                parts = line.split('-')
+                if len(parts) == 5:
+                    adcode_key = parts[1]
+                    coordinates = f"{parts[3]},{parts[4]}"
+                    adcode_center_map[adcode_key] = coordinates
+
+    return adcode_center_map.get(str(adcode), "Unknown adcode")
+
+
+def main(adcodes, api_key):
+    weather_data_list = []
+
+    for adcode in adcodes:
+        loc = get_coordinates_from_file(adcode)
+        if loc == "Unknown adcode":
+            weather_data_list.append({
+                "adcode": adcode,
+                "value": "Unknown adcode"
+            })
+            continue
+
+        weather_data = get_weather_data(loc, api_key)
+        if weather_data is None:
+            weather_data_list.append({
+                "adcode": adcode,
+                "value": "Failed to retrieve weather data"
+            })
+            continue
+
+        weather_data_list.append({
+            "adcode": adcode,
+            "value": [
+                weather_data["pressure"],
+                weather_data["temp"],
+                weather_data["humidity"],
+                weather_data["precip"],
+                weather_data["windSpeed"],
+                weather_data["vis"],
+                weather_data["cloud"]
+            ]
+        })
+
+    result = {
+        "code": 62,
+        "msg": "officia",
+        "data": {
+            "weather": weather_data_list
+        }
+    }
+    return result
+
 # 示例调用
 api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'  # 替换为你的API Key
-latitude = 39.92  # 示例纬度
-longitude = 116.41  # 示例经度
-
-weather_data = get_weather_data(longitude, latitude, api_key)
-print(weather_data)
+#latitude = 39.92  # 示例纬度
+#longitude = 116.41  # 示例经度
+#file_path = "D:\\appfile\pythonfile\weather_backend\\app1\centers (1).txt"
+adcodes = ["110000", "120000", "130000"]
+result = main(adcodes, api_key)
+print(json.dumps(result, indent=2, ensure_ascii=False))
