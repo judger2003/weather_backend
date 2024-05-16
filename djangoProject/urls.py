@@ -15,6 +15,7 @@ urlpatterns = [
     path('user/feedback', user_feedback),
     path('user/warnings', user_warning),
     path('user/avatar', user_avatar),
+    path('user/forgetPassword', forget_password),
 
     path('admin/user-digests', userList),
     path('admin/delete-user', delete_user),

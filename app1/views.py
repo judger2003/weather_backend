@@ -94,8 +94,11 @@ def login(request):
 
     real_password = password  # TODO: md5加密
 
-    pass  # TODO: 分辨uid为用户名/手机号/邮箱
-    users = User.objects.filter(name=uid, password=real_password)
+    pass  # TODO: 手机号
+    if '@' in uid:
+        users = User.objects.filter(email=uid, password=real_password)
+    else:
+        users = User.objects.filter(name=uid, password=real_password)
     if users.exists():
         user = users.first()
 
@@ -157,6 +160,34 @@ def change_password(request):
                     "msg": "原密码错误"
                 }
             )
+
+
+def forget_password(request):
+    if request.method == "POST":
+        try:
+            email = request.POST.get('email')
+            verifyCode = request.POST.get('verifyCode')
+            password = request.POST.get('password')
+            user = User.objects.get(email=email)
+            verified, msg = checkVerifyCode(email, verifyCode, 'forget')
+            if verified:
+                user.password = password
+                user.save()
+                return JsonResponse({
+                    "code": 20000,
+                    "msg": "密码修改成功"
+                })
+            else:
+                return JsonResponse({
+                    "code": 100,
+                    "msg": msg
+                })
+
+        except Exception:
+            return JsonResponse({
+                "code": 100,
+                "msg": "邮箱不存在"
+            })
 
 
 def getUserInfo(request):
@@ -789,41 +820,55 @@ def getCityData(request):
         })
 
 
+def send_code(email, sendType, sendTime):
+    code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+    try:
+        # 主题, 内容, 发送者, 接收方(多个, 错误相关
+        send_mail("邮箱绑定",
+                  f"您好, 验证码为{code}, 请在网站上输入此验证码, 有效期为{settings.EMAIL_EXPIRE}分钟。如果本封邮件非您本人触发, 请忽略。",
+                  settings.EMAIL_HOST_USER, [email], fail_silently=False)
+        try:
+            emailVerify = EmailVerify.objects.get(email=email)
+            emailVerify.code = code
+            emailVerify.sendType = sendType
+        except Exception:
+            emailVerify = EmailVerify()
+            emailVerify.code = code
+            emailVerify.email = email
+            emailVerify.sendType = sendType
+        emailVerify.sendTime = sendTime
+        emailVerify.save()
+    except Exception:
+        return JsonResponse({
+            "code": 100,
+            "msg": "发送邮件错误"
+        })
+    return JsonResponse({
+        "code": 20000,
+        "msg": "验证码已发送，请注意查收"
+    })
+
+
 def sendVerifyCode(request):
     if request.method == "POST":
         email = request.POST.get("email")
         sendType = request.POST.get('sendType')
         sendTime = datetime.datetime.now()
-        try:
-            User.objects.get(email=email)
-        except Exception:
-            code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+        if sendType == 'register':
             try:
-                # 主题, 内容, 发送者, 接收方(多个, 错误相关
-                send_mail("邮箱绑定",
-                          f"您好, 验证码为{code}, 请在网站上输入此验证码, 有效期为{settings.EMAIL_EXPIRE}分钟。如果本封邮件非您本人触发, 请忽略。",
-                          settings.EMAIL_HOST_USER, [email], fail_silently=False)
-                try:
-                    emailVerify = EmailVerify.objects.get(email=email)
-                    emailVerify.code = code
-                    emailVerify.sendType = sendType
-                except Exception:
-                    emailVerify = EmailVerify()
-                    emailVerify.code = code
-                    emailVerify.email = email
-                    emailVerify.sendType = sendType
-                emailVerify.sendTime = sendTime
-                emailVerify.save()
+                User.objects.get(email=email)
+            except Exception:
+                return send_code(email, sendType, sendTime)
+            return JsonResponse({
+                "code": 100,
+                "msg": "邮箱已被使用"
+            })
+        else:
+            try:
+                User.objects.get(email=email)
+                return send_code(email, sendType, sendTime)
             except Exception:
                 return JsonResponse({
                     "code": 100,
-                    "msg": "发送邮件错误"
+                    "msg": "邮箱不存在"
                 })
-            return JsonResponse({
-                "code": 20000,
-                "msg": "验证码已发送，请注意查收"
-            })
-        return JsonResponse({
-            "code": 100,
-            "msg": "邮箱已被使用"
-        })
