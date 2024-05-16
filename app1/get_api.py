@@ -1,12 +1,12 @@
 import requests
 import csv
 import json
+import adcode2loc
 
-
-def get_weather_data(lon, lat, api_key):
+def get_weather_data(location, api_key):
     try:
         # 构建请求URL
-        location = f"{lon},{lat}"
+        #location = "11010100"
         url = f"https://api.qweather.com/v7/weather/now?location={location}&key={api_key}"
 
         # 打印调试信息
