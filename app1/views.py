@@ -33,20 +33,21 @@ def post_csrf(request):
         })
 
 
-def checkVerifyCode(email, verifyCode):
-    emailVerify = EmailVerify.objects.get(email=email)
-    sendTime = emailVerify.sendTime
-    print(sendTime, datetime.datetime.now())
-    print(sendTime + datetime.timedelta(minutes=settings.EMAIL_EXPIRE))
-    if sendTime + datetime.timedelta(minutes=settings.EMAIL_EXPIRE) < datetime.datetime.now():
-        emailVerify.delete()
-        return False, "验证码过期"
-    else:
-        if verifyCode == emailVerify.code:
+def checkVerifyCode(email, verifyCode, sendType):
+    try:
+        emailVerify = EmailVerify.objects.get(email=email)
+        sendTime = emailVerify.sendTime
+        if sendTime + datetime.timedelta(minutes=settings.EMAIL_EXPIRE) < datetime.datetime.now():
             emailVerify.delete()
-            return True, "验证成功"
+            return False, "验证码过期"
         else:
-            return False, "验证码错误"
+            if verifyCode == emailVerify.code and sendType == emailVerify.sendType:
+                emailVerify.delete()
+                return True, "验证成功"
+            else:
+                return False, "验证码错误"
+    except EmailVerify.DoesNotExist:
+        return False, "请先发送验证码"
 
 
 def register(request):
@@ -65,7 +66,7 @@ def register(request):
                 "msg": "用户名已存在",
             }
         )
-    verified, msg = checkVerifyCode(email, verifyCode)
+    verified, msg = checkVerifyCode(email, verifyCode, 'register')
     if verified:
         user = User()
         user.name = name

@@ -121,7 +121,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_HOST_USER = 'weather_buaase@163.com'
-EMAIL_HOST_PASSWORD = 'BNLLXGCJCUUUHPXJ'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 25
 EMAIL_FROM = '天气系统'
