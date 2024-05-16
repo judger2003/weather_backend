@@ -1,2 +1,5 @@
-db.sqlite3
-db2.sqlite3
+.venv
+.idea
+*.sqlite3
+__pycache__
+key

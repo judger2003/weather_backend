@@ -8,7 +8,7 @@ class User(models.Model):
     password = models.CharField(max_length=100, null=False)
     avatar = models.CharField(max_length=200, default='static/default.png')
     phone = models.CharField(max_length=15, null=True)
-    email = models.CharField(max_length=40, null=True)
+    email = models.CharField(max_length=40)
     isAdmin = models.BooleanField(default=False)
     cities = models.CharField(max_length=500, null=True, default='')
 
@@ -38,3 +38,14 @@ class Notice(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
     tag = models.CharField(max_length=40)
+
+
+class EmailVerify(models.Model):
+    SEND_TYPE_CHOICES = (
+        ('register', '注册'), ('forget', '忘记密码')
+    )
+
+    email = models.EmailField(unique=True, null=False, max_length=50)
+    code = models.CharField(max_length=50, null=False)
+    sendType = models.CharField(choices=SEND_TYPE_CHOICES, max_length=50, default='register', null=False)
+    sendTime = models.DateTimeField()

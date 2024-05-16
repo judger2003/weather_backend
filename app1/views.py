@@ -1,9 +1,12 @@
 import os
+import string
+import random
+import datetime
 
-from django.contrib.sites import requests
 from django.http import JsonResponse
 from app1.models import *
 from django.template.context_processors import csrf
+from django.core.mail import send_mail
 
 import time
 
@@ -30,11 +33,29 @@ def post_csrf(request):
         })
 
 
+def checkVerifyCode(email, verifyCode, sendType):
+    try:
+        emailVerify = EmailVerify.objects.get(email=email)
+        sendTime = emailVerify.sendTime
+        if sendTime + datetime.timedelta(minutes=settings.EMAIL_EXPIRE) < datetime.datetime.now():
+            emailVerify.delete()
+            return False, "验证码过期"
+        else:
+            if verifyCode == emailVerify.code and sendType == emailVerify.sendType:
+                emailVerify.delete()
+                return True, "验证成功"
+            else:
+                return False, "验证码错误"
+    except EmailVerify.DoesNotExist:
+        return False, "请先发送验证码"
+
+
 def register(request):
     name = request.POST.get('username')
     password = request.POST.get('password')
     email = request.POST.get('email')
     phone = request.POST.get('phone')
+    verifyCode = request.POST.get('verifyCode')
 
     # 判断name是否已存在
     users = User.objects.filter(name=name)
@@ -45,22 +66,26 @@ def register(request):
                 "msg": "用户名已存在",
             }
         )
-
-    user = User()
-    user.name = name
-    user.password = password  # TODO：md5加密
-    if email:
+    verified, msg = checkVerifyCode(email, verifyCode, 'register')
+    if verified:
+        user = User()
+        user.name = name
+        user.password = password  # TODO：md5加密
         user.email = email
-    if phone:
-        user.phone = phone
-    user.save()
-
-    return JsonResponse(
-        {
-            "code": 20000,
-            "msg": "注册成功",
-        }
-    )
+        if phone:
+            user.phone = phone
+        user.save()
+        return JsonResponse(
+            {
+                "code": 20000,
+                "msg": "注册成功",
+            }
+        )
+    else:
+        return JsonResponse({
+            "code": 100,
+            "msg": msg
+        })
 
 
 def login(request):
@@ -69,8 +94,11 @@ def login(request):
 
     real_password = password  # TODO: md5加密
 
-    pass  # TODO: 分辨uid为用户名/手机号/邮箱
-    users = User.objects.filter(name=uid, password=real_password)
+    pass  # TODO: 手机号
+    if '@' in uid:
+        users = User.objects.filter(email=uid, password=real_password)
+    else:
+        users = User.objects.filter(name=uid, password=real_password)
     if users.exists():
         user = users.first()
 
@@ -132,6 +160,34 @@ def change_password(request):
                     "msg": "原密码错误"
                 }
             )
+
+
+def forget_password(request):
+    if request.method == "POST":
+        try:
+            email = request.POST.get('email')
+            verifyCode = request.POST.get('verifyCode')
+            password = request.POST.get('password')
+            user = User.objects.get(email=email)
+            verified, msg = checkVerifyCode(email, verifyCode, 'forget')
+            if verified:
+                user.password = password
+                user.save()
+                return JsonResponse({
+                    "code": 20000,
+                    "msg": "密码修改成功"
+                })
+            else:
+                return JsonResponse({
+                    "code": 100,
+                    "msg": msg
+                })
+
+        except Exception:
+            return JsonResponse({
+                "code": 100,
+                "msg": "邮箱不存在"
+            })
 
 
 def getUserInfo(request):
@@ -667,37 +723,24 @@ def notice_content(request):
 
 def notice_state(request):
     if request.method == "POST":
+        # id = request.POST.get("id")
+        # state = request.POST.get("state")
+        id = request.GET.get("id")
+        state = request.GET.get("state")
         try:
-            admin = User.objects.get(id=request.session['userid'])
+            id = int(id)
+            notice = Notice.objects.get(id=id)
         except Exception:
             return JsonResponse({
-                "code": 100,
-                "msg": "未登录",
+                "code": 101,
+                "msg": "id错误",
             })
-        if True:
-            # id = request.POST.get("id")
-            # state = request.POST.get("state")
-            id = request.GET.get("id")
-            state = request.GET.get("state")
-            try:
-                id = int(id)
-                notice = Notice.objects.get(id=id)
-            except Exception:
-                return JsonResponse({
-                    "code": 101,
-                    "msg": "id错误",
-                })
-            notice.read = state == "已读"
-            notice.save(update_fields=["read"])
-            return JsonResponse({
-                "code": 20000,
-                "msg": "公告状态更改为%s" % state
-            })
-        else:
-            return JsonResponse({
-                "code": 100,
-                "msg": "非管理员用户",
-            })
+        notice.read = state == "已读"
+        notice.save(update_fields=["read"])
+        return JsonResponse({
+            "code": 20000,
+            "msg": "公告状态更改为%s" % state
+        })
 
 
 def delete_notice(request):
@@ -743,28 +786,23 @@ def getCityData(request):
                 "data": None
             })
         adcodes = request.POST.get("adcodes")
-        type = request.POST.get("type")
-        date = request.POST.get("date").split('-')
-        year = int(date[0])
-        month = int(date[1])
-        day = int(date[2])
-        hour = int(date[3])
-
+        #type = request.POST.get("type")
+        #date = request.POST.get("date").split('-')
+        import get_api
+        api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'
         # 替换为你的帐号和密码
-        user_id = "<你的帐号>"
-        password = "<你的密码>"
-
-        # 构造API请求参数
-        url = "http://api.data.cma.cn:8090/api"
+        #user_id = "<你的帐号>"
+        #password = "<你的密码>"
         params = {
-            "userId": user_id,
+            ''''"userId": user_id,
             "pwd": password,
             "dataFormat": "json",
             "interfaceId": "getSurfEleByTimeRangeAndStaID",
             "dataCode": "SURF_CHN_MUL_HOR_3H",
             "timeRange": "<时间范围>",
             "staIDs": "<台站列表>",
-            "elements": "Station_Id_C,Year,Mon,Day,Hour,<要素列表>"
+            "elements": "Station_Id_C,Year,Mon,Day,Hour,<要素列表>"'''
+            "weather":get_api.main(adcodes,api_key)
         }
 
         # 发起API请求
@@ -773,5 +811,59 @@ def getCityData(request):
         return JsonResponse({
             "code": 20000,
             "msg": "success",
-            "data": None
+            "data": params
         })
+
+
+def send_code(email, sendType, sendTime):
+    code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+    try:
+        # 主题, 内容, 发送者, 接收方(多个, 错误相关
+        send_mail("邮箱绑定",
+                  f"您好, 验证码为{code}, 请在网站上输入此验证码, 有效期为{settings.EMAIL_EXPIRE}分钟。如果本封邮件非您本人触发, 请忽略。",
+                  settings.EMAIL_HOST_USER, [email], fail_silently=False)
+        try:
+            emailVerify = EmailVerify.objects.get(email=email)
+            emailVerify.code = code
+            emailVerify.sendType = sendType
+        except Exception:
+            emailVerify = EmailVerify()
+            emailVerify.code = code
+            emailVerify.email = email
+            emailVerify.sendType = sendType
+        emailVerify.sendTime = sendTime
+        emailVerify.save()
+    except Exception:
+        return JsonResponse({
+            "code": 100,
+            "msg": "发送邮件错误"
+        })
+    return JsonResponse({
+        "code": 20000,
+        "msg": "验证码已发送，请注意查收"
+    })
+
+
+def sendVerifyCode(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        sendType = request.POST.get('sendType')
+        sendTime = datetime.datetime.now()
+        if sendType == 'register':
+            try:
+                User.objects.get(email=email)
+            except Exception:
+                return send_code(email, sendType, sendTime)
+            return JsonResponse({
+                "code": 100,
+                "msg": "邮箱已被使用"
+            })
+        else:
+            try:
+                User.objects.get(email=email)
+                return send_code(email, sendType, sendTime)
+            except Exception:
+                return JsonResponse({
+                    "code": 100,
+                    "msg": "邮箱不存在"
+                })
