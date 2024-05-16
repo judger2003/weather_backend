@@ -785,7 +785,7 @@ def getCityData(request):
                 "msg": "未登录",
                 "data": None
             })
-        adcodes = request.POST.get("adcodes")
+        adcodes = request.GET.get("adcodes")
         #type = request.POST.get("type")
         #date = request.POST.get("date").split('-')
         import get_api
@@ -802,14 +802,14 @@ def getCityData(request):
             "timeRange": "<时间范围>",
             "staIDs": "<台站列表>",
             "elements": "Station_Id_C,Year,Mon,Day,Hour,<要素列表>"'''
-            "weather":get_api.main(adcodes,api_key)
+            "weather": get_api.main(adcodes,api_key)
         }
 
         # 发起API请求
         # response = requests.get(url, params=params)
 
         return JsonResponse({
-            "code": 20000,
+            "code": 200,
             "msg": "success",
             "data": params
         })

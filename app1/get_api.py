@@ -65,7 +65,7 @@ def get_weather_data(location, api_key):
 
 def get_coordinates_from_file(adcode):
     adcode_center_map = {}
-    file_path = "D:\\appfile\pythonfile\weather_backend\\app1\centers (1).txt"
+    file_path = "/home/appfile/backend/djangoProject/app1/centers (1).txt"
     with open(file_path, 'r', encoding='utf-8') as file:
         for line in file:
             line = line.strip()

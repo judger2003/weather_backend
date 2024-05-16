@@ -4102,3 +4102,155 @@ spawned uWSGI worker 4 (pid: 38441, cores: 2)
 [pid: 38441|app: 0|req: 116/439] 219.239.227.189 () {62 vars in 1095 bytes} [Thu May 16 04:20:06 2024] GET /prod-api/get_csrf => generated 97 bytes in 0 msecs (HTTP/1.1 200) 6 headers in 198 bytes (1 switches on core 0)
 [pid: 38438|app: 0|req: 78/440] 219.239.227.189 () {62 vars in 1261 bytes} [Thu May 16 04:20:06 2024] GET /prod-api/user/info => generated 142 bytes in 2 msecs (HTTP/1.1 200) 7 headers in 213 bytes (1 switches on core 0)
 [pid: 38440|app: 0|req: 196/441] 219.239.227.189 () {62 vars in 1276 bytes} [Thu May 16 04:20:37 2024] GET /prod-api/notice/digests => generated 763 bytes in 3 msecs (HTTP/1.1 200) 7 headers in 213 bytes (1 switches on core 1)
+*** Starting uWSGI 2.0.25.1 (64bit) on [Thu May 16 16:04:34 2024] ***
+compiled with version: 11.3.0 on 08 May 2024 14:49:33
+os: Linux-5.15.0-76-generic #83-Ubuntu SMP Thu Jun 15 19:16:32 UTC 2023
+nodename: buaa-se-0602-0005
+machine: x86_64
+clock source: unix
+detected number of CPU cores: 2
+current working directory: /home/appfile/backend/djangoProject
+detected binary path: /usr/local/bin/uwsgi
+!!! no internal routing support, rebuild with pcre support !!!
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+chdir() to /home/appfile/backend/djangoProject
+your processes number limit is 30526
+your memory page size is 4096 bytes
+detected max file descriptor number: 65535
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /home/appfile/backend/djangoProject/myproject.sock fd 3
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+Python version: 3.10.6 (main, May 29 2023, 11:10:38) [GCC 11.3.0]
+Set PythonHome to /root/anaconda3/envs/weather
+Python main interpreter initialized at 0x562e2bc53c60
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 703600 bytes (687 KB) for 8 cores
+*** Operational MODE: preforking+threaded ***
+WSGI app 0 (mountpoint='') ready in 1 seconds on interpreter 0x562e2bc53c60 pid: 231302 (default app)
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 231302)
+spawned uWSGI worker 1 (pid: 231304, cores: 2)
+spawned uWSGI worker 2 (pid: 231305, cores: 2)
+spawned uWSGI worker 3 (pid: 231307, cores: 2)
+spawned uWSGI worker 4 (pid: 231308, cores: 2)
+[pid: 231307|app: 0|req: 1/1] 103.172.183.54 () {66 vars in 1198 bytes} [Thu May 16 16:05:41 2024] POST /prod-api/user/login => generated 65 bytes in 31 msecs (HTTP/1.1 200) 8 headers in 355 bytes (1 switches on core 0)
+[pid: 231307|app: 0|req: 2/2] 103.172.183.54 () {62 vars in 1094 bytes} [Thu May 16 16:05:42 2024] GET /prod-api/get_csrf => generated 97 bytes in 1 msecs (HTTP/1.1 200) 6 headers in 198 bytes (1 switches on core 1)
+[pid: 231307|app: 0|req: 3/3] 103.172.183.54 () {62 vars in 1260 bytes} [Thu May 16 16:05:42 2024] GET /prod-api/user/info => generated 142 bytes in 24 msecs (HTTP/1.1 200) 7 headers in 213 bytes (1 switches on core 0)
+[pid: 231307|app: 0|req: 4/4] 103.172.183.54 () {62 vars in 2455 bytes} [Thu May 16 16:05:47 2024] GET /prod-api/getCityData?adcodes[]=110000&adcodes[]=120000&adcodes[]=130000&adcodes[]=140000&adcodes[]=150000&adcodes[]=210000&adcodes[]=220000&adcodes[]=230000&adcodes[]=310000&adcodes[]=320000&adcodes[]=330000&adcodes[]=340000&adcodes[]=350000&adcodes[]=360000&adcodes[]=370000&adcodes[]=410000&adcodes[]=420000&adcodes[]=430000&adcodes[]=440000&adcodes[]=450000&adcodes[]=460000&adcodes[]=500000&adcodes[]=510000&adcodes[]=520000&adcodes[]=530000&adcodes[]=540000&adcodes[]=610000&adcodes[]=620000&adcodes[]=630000&adcodes[]=640000&adcodes[]=650000&adcodes[]=710000&adcodes[]=810000&adcodes[]=820000&adcodes[]=100000 => generated 145 bytes in 45 msecs (HTTP/1.1 500) 7 headers in 240 bytes (1 switches on core 1)
+[pid: 231307|app: 0|req: 5/5] 103.172.183.54 () {62 vars in 2455 bytes} [Thu May 16 16:06:00 2024] GET /prod-api/getCityData?adcodes[]=110000&adcodes[]=120000&adcodes[]=130000&adcodes[]=140000&adcodes[]=150000&adcodes[]=210000&adcodes[]=220000&adcodes[]=230000&adcodes[]=310000&adcodes[]=320000&adcodes[]=330000&adcodes[]=340000&adcodes[]=350000&adcodes[]=360000&adcodes[]=370000&adcodes[]=410000&adcodes[]=420000&adcodes[]=430000&adcodes[]=440000&adcodes[]=450000&adcodes[]=460000&adcodes[]=500000&adcodes[]=510000&adcodes[]=520000&adcodes[]=530000&adcodes[]=540000&adcodes[]=610000&adcodes[]=620000&adcodes[]=630000&adcodes[]=640000&adcodes[]=650000&adcodes[]=710000&adcodes[]=810000&adcodes[]=820000&adcodes[]=100000 => generated 145 bytes in 26 msecs (HTTP/1.1 500) 7 headers in 240 bytes (1 switches on core 0)
+*** Starting uWSGI 2.0.25.1 (64bit) on [Thu May 16 16:13:44 2024] ***
+compiled with version: 11.3.0 on 08 May 2024 14:49:33
+os: Linux-5.15.0-76-generic #83-Ubuntu SMP Thu Jun 15 19:16:32 UTC 2023
+nodename: buaa-se-0602-0005
+machine: x86_64
+clock source: unix
+detected number of CPU cores: 2
+current working directory: /home/appfile/backend/djangoProject
+detected binary path: /usr/local/bin/uwsgi
+!!! no internal routing support, rebuild with pcre support !!!
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+chdir() to /home/appfile/backend/djangoProject
+your processes number limit is 30526
+your memory page size is 4096 bytes
+detected max file descriptor number: 65535
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /home/appfile/backend/djangoProject/myproject.sock fd 3
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+Python version: 3.10.6 (main, May 29 2023, 11:10:38) [GCC 11.3.0]
+Set PythonHome to /root/anaconda3/envs/weather
+Python main interpreter initialized at 0x55b405927c60
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 703600 bytes (687 KB) for 8 cores
+*** Operational MODE: preforking+threaded ***
+WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x55b405927c60 pid: 231965 (default app)
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 231965)
+spawned uWSGI worker 1 (pid: 231967, cores: 2)
+spawned uWSGI worker 2 (pid: 231968, cores: 2)
+spawned uWSGI worker 3 (pid: 231970, cores: 2)
+spawned uWSGI worker 4 (pid: 231971, cores: 2)
+[pid: 231968|app: 0|req: 1/1] 103.172.183.54 () {62 vars in 2455 bytes} [Thu May 16 16:13:53 2024] GET /prod-api/getCityData?adcodes[]=110000&adcodes[]=120000&adcodes[]=130000&adcodes[]=140000&adcodes[]=150000&adcodes[]=210000&adcodes[]=220000&adcodes[]=230000&adcodes[]=310000&adcodes[]=320000&adcodes[]=330000&adcodes[]=340000&adcodes[]=350000&adcodes[]=360000&adcodes[]=370000&adcodes[]=410000&adcodes[]=420000&adcodes[]=430000&adcodes[]=440000&adcodes[]=450000&adcodes[]=460000&adcodes[]=500000&adcodes[]=510000&adcodes[]=520000&adcodes[]=530000&adcodes[]=540000&adcodes[]=610000&adcodes[]=620000&adcodes[]=630000&adcodes[]=640000&adcodes[]=650000&adcodes[]=710000&adcodes[]=810000&adcodes[]=820000&adcodes[]=100000 => generated 145 bytes in 85 msecs (HTTP/1.1 500) 7 headers in 240 bytes (2 switches on core 0)
+*** Starting uWSGI 2.0.25.1 (64bit) on [Thu May 16 16:14:34 2024] ***
+compiled with version: 11.3.0 on 08 May 2024 14:49:33
+os: Linux-5.15.0-76-generic #83-Ubuntu SMP Thu Jun 15 19:16:32 UTC 2023
+nodename: buaa-se-0602-0005
+machine: x86_64
+clock source: unix
+detected number of CPU cores: 2
+current working directory: /home/appfile/backend/djangoProject
+detected binary path: /usr/local/bin/uwsgi
+!!! no internal routing support, rebuild with pcre support !!!
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+chdir() to /home/appfile/backend/djangoProject
+your processes number limit is 30526
+your memory page size is 4096 bytes
+detected max file descriptor number: 65535
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /home/appfile/backend/djangoProject/myproject.sock fd 3
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+Python version: 3.10.6 (main, May 29 2023, 11:10:38) [GCC 11.3.0]
+Set PythonHome to /root/anaconda3/envs/weather
+Python main interpreter initialized at 0x55a6f8e84c60
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 703600 bytes (687 KB) for 8 cores
+*** Operational MODE: preforking+threaded ***
+WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x55a6f8e84c60 pid: 232051 (default app)
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 232051)
+spawned uWSGI worker 1 (pid: 232053, cores: 2)
+spawned uWSGI worker 2 (pid: 232054, cores: 2)
+spawned uWSGI worker 3 (pid: 232056, cores: 2)
+spawned uWSGI worker 4 (pid: 232057, cores: 2)
+*** Starting uWSGI 2.0.25.1 (64bit) on [Thu May 16 16:14:50 2024] ***
+compiled with version: 11.3.0 on 08 May 2024 14:49:33
+os: Linux-5.15.0-76-generic #83-Ubuntu SMP Thu Jun 15 19:16:32 UTC 2023
+nodename: buaa-se-0602-0005
+machine: x86_64
+clock source: unix
+detected number of CPU cores: 2
+current working directory: /home/appfile/backend/djangoProject
+detected binary path: /usr/local/bin/uwsgi
+!!! no internal routing support, rebuild with pcre support !!!
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+chdir() to /home/appfile/backend/djangoProject
+your processes number limit is 30526
+your memory page size is 4096 bytes
+detected max file descriptor number: 65535
+lock engine: pthread robust mutexes
+thunder lock: disabled (you can enable it with --thunder-lock)
+uwsgi socket 0 bound to UNIX address /home/appfile/backend/djangoProject/myproject.sock fd 3
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+Python version: 3.10.6 (main, May 29 2023, 11:10:38) [GCC 11.3.0]
+Set PythonHome to /root/anaconda3/envs/weather
+Python main interpreter initialized at 0x55e90afb5c60
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+python threads support enabled
+your server socket listen backlog is limited to 100 connections
+your mercy for graceful operations on workers is 60 seconds
+mapped 703600 bytes (687 KB) for 8 cores
+*** Operational MODE: preforking+threaded ***
+WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0x55e90afb5c60 pid: 232104 (default app)
+*** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+*** uWSGI is running in multiple interpreter mode ***
+spawned uWSGI master process (pid: 232104)
+spawned uWSGI worker 1 (pid: 232106, cores: 2)
+spawned uWSGI worker 2 (pid: 232107, cores: 2)
+spawned uWSGI worker 3 (pid: 232109, cores: 2)
+spawned uWSGI worker 4 (pid: 232110, cores: 2)
+[pid: 232109|app: 0|req: 1/1] 103.172.183.54 () {62 vars in 2455 bytes} [Thu May 16 16:14:57 2024] GET /prod-api/getCityData?adcodes[]=110000&adcodes[]=120000&adcodes[]=130000&adcodes[]=140000&adcodes[]=150000&adcodes[]=210000&adcodes[]=220000&adcodes[]=230000&adcodes[]=310000&adcodes[]=320000&adcodes[]=330000&adcodes[]=340000&adcodes[]=350000&adcodes[]=360000&adcodes[]=370000&adcodes[]=410000&adcodes[]=420000&adcodes[]=430000&adcodes[]=440000&adcodes[]=450000&adcodes[]=460000&adcodes[]=500000&adcodes[]=510000&adcodes[]=520000&adcodes[]=530000&adcodes[]=540000&adcodes[]=610000&adcodes[]=620000&adcodes[]=630000&adcodes[]=640000&adcodes[]=650000&adcodes[]=710000&adcodes[]=810000&adcodes[]=820000&adcodes[]=100000 => generated 145 bytes in 81 msecs (HTTP/1.1 500) 7 headers in 240 bytes (1 switches on core 0)
+[pid: 232109|app: 0|req: 2/2] 103.172.183.54 () {62 vars in 2455 bytes} [Thu May 16 16:16:41 2024] GET /prod-api/getCityData?adcodes[]=110000&adcodes[]=120000&adcodes[]=130000&adcodes[]=140000&adcodes[]=150000&adcodes[]=210000&adcodes[]=220000&adcodes[]=230000&adcodes[]=310000&adcodes[]=320000&adcodes[]=330000&adcodes[]=340000&adcodes[]=350000&adcodes[]=360000&adcodes[]=370000&adcodes[]=410000&adcodes[]=420000&adcodes[]=430000&adcodes[]=440000&adcodes[]=450000&adcodes[]=460000&adcodes[]=500000&adcodes[]=510000&adcodes[]=520000&adcodes[]=530000&adcodes[]=540000&adcodes[]=610000&adcodes[]=620000&adcodes[]=630000&adcodes[]=640000&adcodes[]=650000&adcodes[]=710000&adcodes[]=810000&adcodes[]=820000&adcodes[]=100000 => generated 145 bytes in 26 msecs (HTTP/1.1 500) 7 headers in 240 bytes (1 switches on core 1)
