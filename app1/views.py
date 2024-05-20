@@ -3,6 +3,7 @@ import string
 import random
 import datetime
 
+from django.db.models import Q
 from django.http import JsonResponse
 from app1.models import *
 from django.template.context_processors import csrf
@@ -400,10 +401,9 @@ def user_avatar(request):
         file_type = file.name.split('.')[-1]
         file_path = os.path.join(settings.STATIC_ROOT, "avatars", "{}_avatar.{}".format(user.id, file_type))
 
-        with open(file_path, "ab") as fp:
+        with open(file_path, "wb") as fp:
             for part in file.chunks():
                 fp.write(part)
-                fp.flush()
 
         user.avatar = "/back_static/avatars/{}_avatar.{}".format(user.id, file_type)
         user.save(update_fields=["avatar"])
@@ -530,7 +530,6 @@ def createWarn(request):
             warningTime = request.GET.get("warningTime")
             type = request.GET.get("type")
             content = request.GET.get("content")
-            selectedEmail = request.GET.get("selectedEmail")
 
             warning = Warning()
             warning.title = title
@@ -540,15 +539,26 @@ def createWarn(request):
             warning.content = content
             try:
                 warning.save()
+                emails = User.objects.filter(Q(cities__contains=f'/{address}/') |
+                                             Q(cities__startswith=f'{address}/') |
+                                             Q(cities__endswith=f'/{address}') |
+                                             Q(cities=address)).values_list('email', flat=True).distinct()
+                try:
+                    send_mail(title, content, settings.EMAIL_HOST_USER, emails, fail_silently=False)
+                except Exception:
+                    return JsonResponse({
+                        "code": 100,
+                        "msg": "发送邮件错误"
+                    })
+                return JsonResponse({
+                    "code": 20000,
+                    "msg": "创建成功"
+                })
             except Exception:
                 return JsonResponse({
                     "code": 101,
                     "msg": "创建失败"
                 })
-            return JsonResponse({
-                "code": 20000,
-                "msg": "创建成功"
-            })
         else:
             return JsonResponse({
                 "code": 100,
@@ -787,14 +797,14 @@ def getCityData(request):
             })
         adcodes = request.GET.getlist('adcodes[]')
         print(adcodes)
-        #type = request.POST.get("type")
-        #date = request.POST.get("date").split('-')
+        # type = request.POST.get("type")
+        # date = request.POST.get("date").split('-')
         from . import get_api
-        
+
         api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'
         # 替换为你的帐号和密码
-        #user_id = "<你的帐号>"
-        #password = "<你的密码>"
+        # user_id = "<你的帐号>"
+        # password = "<你的密码>"
         '''params = {
             "userId": user_id,
             "pwd": password,
@@ -809,16 +819,16 @@ def getCityData(request):
         print(params)'''
         # 发起API请求
         # response = requests.get(url, params=params)
-        result = get_api.main(adcodes,api_key)
+        result = get_api.main(adcodes, api_key)
         print(result)
         return JsonResponse(result)
 
 
-def send_code(email, sendType, sendTime):
+def send_code(subject, email, sendType, sendTime):
     code = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
     try:
         # 主题, 内容, 发送者, 接收方(多个, 错误相关
-        send_mail("邮箱绑定",
+        send_mail(subject,
                   f"您好, 验证码为{code}, 请在网站上输入此验证码, 有效期为{settings.EMAIL_EXPIRE}分钟。如果本封邮件非您本人触发, 请忽略。",
                   settings.EMAIL_HOST_USER, [email], fail_silently=False)
         try:
@@ -852,7 +862,7 @@ def sendVerifyCode(request):
             try:
                 User.objects.get(email=email)
             except Exception:
-                return send_code(email, sendType, sendTime)
+                return send_code("邮箱绑定", email, sendType, sendTime)
             return JsonResponse({
                 "code": 100,
                 "msg": "邮箱已被使用"
@@ -860,7 +870,7 @@ def sendVerifyCode(request):
         else:
             try:
                 User.objects.get(email=email)
-                return send_code(email, sendType, sendTime)
+                return send_code("修改密码", email, sendType, sendTime)
             except Exception:
                 return JsonResponse({
                     "code": 100,
