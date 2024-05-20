@@ -399,14 +399,17 @@ def user_avatar(request):
                 "msg": "无文件上传"
             })
         file_type = file.name.split('.')[-1]
-        file_path = os.path.join(settings.STATIC_ROOT, "avatars", "{}_avatar.{}".format(user.id, file_type))
+        img_name = f"{user.id}_avatar_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.{file_type}"
+        file_path = os.path.join(settings.STATIC_ROOT, "avatars", img_name)
 
         with open(file_path, "wb") as fp:
             for part in file.chunks():
                 fp.write(part)
 
-        user.avatar = "/back_static/avatars/{}_avatar.{}".format(user.id, file_type)
+        origin_avatar = os.path.join(settings.STATIC_ROOT, "avatars", user.avatar)
+        user.avatar = "/back_static/avatars/" + img_name
         user.save(update_fields=["avatar"])
+        os.remove(origin_avatar)
         return JsonResponse({
             "code": 20000,
             "msg": "头像修改成功"
@@ -454,8 +457,7 @@ def delete_user(request):
                 "msg": "未登录"
             })
         if admin.isAdmin:
-            # uid = request.POST.get("username")
-            uid = request.GET.get("username")
+            uid = request.POST.get("username")
             user = User.objects.filter(name=uid).first()
             if user:
                 user.delete()
@@ -485,8 +487,8 @@ def reset_password(request):
                 "msg": "未登录"
             })
         if admin.isAdmin:
-            # uid = request.POST.get("username")
-            uid = request.GET.get("username")
+            uid = request.POST.get("username")
+            # uid = request.GET.get("username")
             user = User.objects.filter(name=uid).first()
             if user:
                 user.password = "defaultPwd1"
@@ -517,19 +519,19 @@ def createWarn(request):
                 "msg": "未登录"
             })
         if admin.isAdmin:
-            '''
             title = request.POST.get("title")
             address = request.POST.get("address")
             warningTime = request.POST.get("warningTime")
             type = request.POST.get("type")
             content = request.POST.get("content")
-            selectedEmail = request.POST.get("selectedEmail")
             '''
+            selectedEmail = request.POST.get("selectedEmail")
             title = request.GET.get("title")
             address = request.GET.get("address")
             warningTime = request.GET.get("warningTime")
             type = request.GET.get("type")
             content = request.GET.get("content")
+            '''
 
             warning = Warning()
             warning.title = title
@@ -610,7 +612,6 @@ def createNotice(request):
                 "msg": "未登录"
             })
         if admin.isAdmin:
-            '''
             title = request.POST.get("title")
             content = request.POST.get("content")
             tag = request.POST.get("tag")
@@ -618,6 +619,7 @@ def createNotice(request):
             title = request.GET.get("title")
             content = request.GET.get("content")
             tag = request.GET.get("tag")
+            '''
 
             notice = Notice()
             notice.title = title
@@ -651,10 +653,10 @@ def reply_feedback(request):
                 "msg": "未登录"
             })
         if admin.isAdmin:
-            # id = request.POST.get("id")
-            # reply = request.POST.get("reply")
-            id = request.GET.get("id")
-            reply = request.GET.get("reply")
+            id = request.POST.get("id")
+            reply = request.POST.get("reply")
+            # id = request.GET.get("id")
+            # reply = request.GET.get("reply")
             try:
                 id = int(id)
                 feedback = Feedback.objects.get(id=id)
@@ -733,10 +735,10 @@ def notice_content(request):
 
 def notice_state(request):
     if request.method == "POST":
-        # id = request.POST.get("id")
-        # state = request.POST.get("state")
-        id = request.GET.get("id")
-        state = request.GET.get("state")
+        id = request.POST.get("id")
+        state = request.POST.get("state")
+        # id = request.GET.get("id")
+        # state = request.GET.get("state")
         try:
             id = int(id)
             notice = Notice.objects.get(id=id)
@@ -763,8 +765,8 @@ def delete_notice(request):
                 "msg": "未登录",
             })
         if admin.isAdmin:
-            # id = request.POST.get("id")
-            id = request.GET.get("id")
+            id = request.POST.get("id")
+            # id = request.GET.get("id")
             try:
                 id = int(id)
                 notice = Notice.objects.get(id=id)
