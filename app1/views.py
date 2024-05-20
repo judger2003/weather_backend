@@ -406,10 +406,11 @@ def user_avatar(request):
             for part in file.chunks():
                 fp.write(part)
 
-        origin_avatar = os.path.join(settings.STATIC_ROOT, "avatars", user.avatar)
+        origin_avatar = os.path.join(settings.STATIC_ROOT, "avatars", user.avatar.split("/")[-1])
         user.avatar = "/back_static/avatars/" + img_name
         user.save(update_fields=["avatar"])
-        os.remove(origin_avatar)
+        if not origin_avatar.endswith("default.png"):
+            os.remove(origin_avatar)
         return JsonResponse({
             "code": 20000,
             "msg": "头像修改成功"
