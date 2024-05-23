@@ -169,7 +169,13 @@ def forget_password(request):
             email = request.POST.get('email')
             verifyCode = request.POST.get('verifyCode')
             password = request.POST.get('password')
-            user = User.objects.get(email=email)
+            try:
+                user = User.objects.get(email=email)
+            except Exception:
+                return JsonResponse({
+                    "code": 100,
+                    "msg": "请输入正确的邮箱"
+                })
             verified, msg = checkVerifyCode(email, verifyCode, 'forget')
             if verified:
                 user.password = password
@@ -790,14 +796,14 @@ def delete_notice(request):
 
 def getCityData(request):
     if request.method == "GET":
-        try:
-            user = User.objects.get(id=request.session['userid'])
-        except Exception:
-            return JsonResponse({
-                "code": 100,
-                "msg": "未登录",
-                "data": None
-            })
+        # try:
+        #     user = User.objects.get(id=request.session['userid'])
+        # except Exception:
+        #     return JsonResponse({
+        #         "code": 100,
+        #         "msg": "未登录",
+        #         "data": None
+        #     })
         adcodes = request.GET.getlist('adcodes[]')
         print(adcodes)
         # type = request.POST.get("type")
