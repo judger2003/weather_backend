@@ -1,6 +1,7 @@
 import requests
 import csv
 import json
+import redis
 #import adcode2loc
 
 def get_weather_data(location, api_key):
@@ -111,7 +112,7 @@ def main(adcodes, api_key):
                 weather_data["cloud"]
             ]
         })
-    print("1/n")
+    #print("1/n")
     print(weather_data_list)
     result = {
         "code": 20000,
@@ -121,12 +122,121 @@ def main(adcodes, api_key):
         }
     }
     return result
+import requests
+import json
+import sqlite3
+import schedule
+import time
 
+def fetch_and_store_weather_data():
+    api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'  # 替换为你的API Key
+    file_path = '/home//appfile//backend//djangoProject//app1//centers (1).txt'  # 替换为中心文件的路径
+
+    # 连接到SQLite数据库
+    conn = sqlite3.connect('/home//appfile//backend//djangoProject//db.sqlite3')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS weather (
+            adcode TEXT PRIMARY KEY,
+            pressure TEXT,
+            temp TEXT,
+            humidity TEXT,
+            precip TEXT,
+            windSpeed TEXT,
+            vis TEXT,
+            cloud TEXT
+        )
+    ''')
+
+    # 从文件中读取所有adcode和坐标
+    with open(file_path, 'r', encoding='utf-8') as file:
+        for line in file:
+            line = line.strip()
+            if line:
+                parts = line.split('-')
+                if len(parts) >= 5:
+                    adcode = parts[1]
+                    coordinates = f"{parts[3]},{parts[4]}"
+                    weather_data = get_weather_data(coordinates, api_key)
+                    if weather_data:
+                        c.execute('''
+                            REPLACE INTO weather (adcode, pressure, temp, humidity, precip, windSpeed, vis, cloud)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        ''', (
+                            adcode,
+                            weather_data["pressure"],
+                            weather_data["temp"],
+                            weather_data["humidity"],
+                            weather_data["precip"],
+                            weather_data["windSpeed"],
+                            weather_data["vis"],
+                            weather_data["cloud"]
+                        ))
+    conn.commit()
+    conn.close()
+    print("Weather data has been stored in the database.")
+
+
+
+def retrieve_weather_data(adcodes):
+    cache = redis.Redis(host='localhost', port=6379, db=0)
+    query = "|".join(adcodes)
+    cached_data = cache.get(query)
+    
+    if cached_data:
+        return json.loads(cached_data)
+    
+    # 缓存中没有数据，从数据库获取
+    #result = get_data_from_db(query)
+    
+    # 将数据存储到缓存中，并设置过期时间（例如 300 秒）
+    conn = sqlite3.connect('/home/appfile/backend/djangoProject/db.sqlite3')
+    c = conn.cursor()
+    weather_data_list = []
+    for adcode in adcodes:
+        c.execute('SELECT * FROM weather WHERE adcode = ?', (adcode,))
+        row = c.fetchone()
+        if row:
+            weather_data_list.append({
+                "adcode": adcode,
+                "value": [row[1], row[2], row[3], row[4], row[5], row[6], row[7]]
+            })
+        else:
+            weather_data_list.append({
+                "adcode": adcode,
+                "value": "Data not found"
+            })
+
+    conn.close()
+    
+    result = {
+        "code": 20000,
+        "msg": "success",
+        "data": {
+            "weather": weather_data_list
+        }
+    }
+    cache.setex(query, 30, json.dumps(result))
+    return result
+
+
+# 定义定时任务
+def scheduled_job():
+    schedule.every().day.at("00:00").do(fetch_and_store_weather_data)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+if __name__ == "__main__":
+    #adcodes = ["110000", "120000", "130000"]
+    #print(retrieve_weather_data(adcodes))
+    #fetch_and_store_weather_data()
+    scheduled_job()
 # 示例调用
-api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'  # 替换为你的API Key
+#api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'  # 替换为你的API Key
 #latitude = 39.92  # 示例纬度
 #longitude = 116.41  # 示例经度
 #file_path = "D:\\appfile\pythonfile\weather_backend\\app1\centers (1).txt"
-adcodes = ["110000", "120000", "130000"]
-result = main(adcodes, api_key)
-print(json.dumps(result, indent=2, ensure_ascii=False))
+#result = main(adcodes, api_key)
+#print(json.dumps(result, indent=2, ensure_ascii=False))

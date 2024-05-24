@@ -828,7 +828,7 @@ def getCityData(request):
         print(params)'''
         # 发起API请求
         # response = requests.get(url, params=params)
-        result = get_api.main(adcodes, api_key)
+        result = get_api.retrieve_weather_data(adcodes)
         print(result)
         return JsonResponse(result)
 
