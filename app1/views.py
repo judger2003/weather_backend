@@ -231,16 +231,21 @@ def userCity(request):
                 "msg": "未登录"
             })
         user_cities = user.cities
-        if len(user_cities) == 0:
-            user_cities = []
-        else:
-            user_cities = user_cities.split('/')
+        city_array = user_cities.split('.')
+        del city_array[-1]
+
+        result = []
+
+        for city in city_array:
+            part = city.split('/')
+            del part[-1]
+            result.append(part)
 
         return JsonResponse(
             {
                 "code": 20000,
                 "msg": "success",
-                "data": user_cities
+                "data": result
             }
         )
     if request.method == "DELETE":
@@ -252,15 +257,21 @@ def userCity(request):
                 "msg": "未登录"
             })
         city = request.GET.get('city')
+        str = ""
+        for ss in city:
+            str = str + ss + "/"
+        str = str + "."
         user_cities = user.cities
-        if len(user_cities) == 0:
-            user_cities = []
-        else:
-            user_cities = user_cities.split('/')
-        try:
-            index = user_cities.index(city)
-        except Exception:
-            index = -1
+        index = user_cities.find(str)
+
+        # if len(user_cities) == 0:
+        #     user_cities = []
+        # else:
+        #     user_cities = user_cities.split('/')
+        # try:
+        #     index = user_cities.index(city)
+        # except Exception:
+        #     index = -1
 
         if index == -1:
             return JsonResponse({
@@ -268,8 +279,8 @@ def userCity(request):
                 "msg": "取消订阅失败！并无对此城市的订阅！"
             })
         else:
-            del user_cities[index]
-            user_cities = '/'.join(user_cities)
+            cities_array = user_cities.split(str)
+            user_cities = ''.join(cities_array)
             user.cities = user_cities
             user.save(update_fields=["cities"])
             return JsonResponse(
@@ -287,19 +298,24 @@ def userCity(request):
                 "msg": "未登录"
             })
         city = request.POST.get('city')
+        str = ""
+        for ss in city:
+            str = str + ss + "/"
+        str = str + "."
         user_cities = user.cities
-        if len(user_cities) == 0:
-            user_cities = []
-        else:
-            user_cities = user_cities.split('/')
-        try:
-            index = user_cities.index(city)
-        except Exception:
-            index = -1
+        index = user_cities.find(str)
+
+        # if len(user_cities) == 0:
+        #     user_cities = []
+        # else:
+        #     user_cities = user_cities.split('/')
+        # try:
+        #     index = user_cities.index(city)
+        # except Exception:
+        #     index = -1
 
         if index == -1:
-            user_cities.append(city)
-            user.cities = '/'.join(user_cities)
+            user.cities = user_cities + str
             user.save(update_fields=["cities"])
             return JsonResponse({
                 "code": 20000,
@@ -369,7 +385,8 @@ def user_warning(request):
                 "code": 100,
                 "msg": "未登录"
             })
-        cities = user.cities.split('/')
+        cities = user.cities.split('.')
+        del cities[-1]
         warnings = []
         for city in cities:
             city_warnings = Warning.objects.filter(address=city)
@@ -381,13 +398,17 @@ def user_warning(request):
             "msg": "success",
             "data": [{
                 "title": w.title,
-                "address": w.address,
+                "address": comp(w.address),
                 "type": w.type,
                 "content": w.content,
                 "warningTime": w.warningTime
             } for w in warnings]
         })
 
+def comp(str):
+    part = str.split('/')
+    del part[-1]
+    return part
 
 def user_avatar(request):
     if request.method == "POST":
@@ -528,6 +549,10 @@ def createWarn(request):
         if admin.isAdmin:
             title = request.POST.get("title")
             address = request.POST.get("address")
+            str = ""
+            for ss in address:
+                str = str + ss + "/"
+            address = str # + "." 不需要分隔符
             warningTime = request.POST.get("warningTime")
             type = request.POST.get("type")
             content = request.POST.get("content")
@@ -548,10 +573,7 @@ def createWarn(request):
             warning.content = content
             try:
                 warning.save()
-                emails = User.objects.filter(Q(cities__contains=f'/{address}/') |
-                                             Q(cities__startswith=f'{address}/') |
-                                             Q(cities__endswith=f'/{address}') |
-                                             Q(cities=address)).values_list('email', flat=True).distinct()
+                emails = User.objects.filter(Q(cities__contains=f'{address}')).values_list('email', flat=True).distinct()
                 try:
                     send_mail(title, content, settings.EMAIL_HOST_USER, emails, fail_silently=False)
                 except Exception:
