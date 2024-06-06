@@ -101,6 +101,9 @@ def login(request):
         users = User.objects.filter(email=uid, password=real_password)
     else:
         users = User.objects.filter(name=uid, password=real_password)
+    print(real_password)
+    print(uid)
+    print(User.objects.filter(name=uid).first().isAdmin)
     if users.exists():
         user = users.first()
 
