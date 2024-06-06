@@ -232,7 +232,7 @@ if __name__ == "__main__":
     #adcodes = ["110000", "120000", "130000"]
     #print(retrieve_weather_data(adcodes))
     #fetch_and_store_weather_data()
-    scheduled_job()
+    fetch_and_store_weather_data()
 # 示例调用
 #api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'  # 替换为你的API Key
 #latitude = 39.92  # 示例纬度
