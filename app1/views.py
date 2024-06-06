@@ -734,7 +734,8 @@ def notice_digest(request):
                 "title": n.title,
                 "tag": n.tag,
                 "state": n.read,
-                "id": str(n.id)
+                "id": str(n.id),
+                "content": n.content
             } for n in notices]
         })
 
