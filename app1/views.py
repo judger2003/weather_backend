@@ -1,3 +1,4 @@
+import json
 import os
 import string
 import random
@@ -256,7 +257,9 @@ def userCity(request):
                 "code": 100,
                 "msg": "未登录"
             })
-        city = request.GET.get('city')
+        raw_data = request.body
+        json_data = json.loads(raw_data)
+        city = json_data['city']
         str = ""
         for ss in city:
             str = str + ss + "/"
@@ -297,7 +300,9 @@ def userCity(request):
                 "code": 100,
                 "msg": "未登录"
             })
-        city = request.POST.get('city')
+        raw_data = request.body.decode('utf-8')
+        json_data = json.loads(raw_data)
+        city = json_data['city']
         str = ""
         for ss in city:
             str = str + ss + "/"
@@ -547,15 +552,17 @@ def createWarn(request):
                 "msg": "未登录"
             })
         if admin.isAdmin:
-            title = request.POST.get("title")
-            address = request.POST.get("address")
+            raw_data = request.body
+            json_data = json.loads(raw_data)
+            title = json_data['title']
+            address = json_data['address']
             str = ""
             for ss in address:
                 str = str + ss + "/"
             address = str # + "." 不需要分隔符
-            warningTime = request.POST.get("warningTime")
-            type = request.POST.get("type")
-            content = request.POST.get("content")
+            warningTime = json_data['warningTime']
+            type = json_data['type']
+            content = json_data['content']
             '''
             selectedEmail = request.POST.get("selectedEmail")
             title = request.GET.get("title")
