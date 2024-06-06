@@ -688,14 +688,14 @@ def reply_feedback(request):
 
 def notice_digest(request):
     if request.method == "GET":
-        try:
+        '''try:
             user = User.objects.get(id=request.session['userid'])
         except Exception:
             return JsonResponse({
                 "code": 100,
                 "msg": "未登录"
             })
-
+        '''
         notices = Notice.objects.all()
         return JsonResponse({
             "code": 20000,
@@ -712,14 +712,14 @@ def notice_digest(request):
 
 def notice_content(request):
     if request.method == "GET":
-        try:
+        '''try:
             user = User.objects.get(id=request.session['userid'])
         except Exception:
             return JsonResponse({
                 "code": 100,
                 "msg": "未登录"
             })
-
+        '''
         # id = request.POST.get("id")
         id = request.GET.get("id")
         try:
