@@ -3,9 +3,14 @@ import os
 import string
 import random
 import datetime
+from pprint import pprint
 
+from apscheduler.schedulers.background import BackgroundScheduler
+import requests
 from django.db.models import Q
 from django.http import JsonResponse
+from django_apscheduler.jobstores import register_events, register_job, DjangoJobStore
+
 from app1.models import *
 from django.template.context_processors import csrf
 from django.core.mail import send_mail
@@ -14,8 +19,65 @@ import time
 
 from djangoProject import settings
 
-
 # Create your views here.
+
+try:
+    scheduler = BackgroundScheduler()
+    scheduler.add_jobstore(DjangoJobStore(), "default")
+
+    @register_job(scheduler, "interval", hours=4, replace_existing=True)
+    def test_job():
+        print("begin to update official warning")
+        list_url = 'https://api.qweather.com/v7/warning/list'
+        warning_url = 'https://api.qweather.com/v7/warning/now'
+        key = 'c61a9a73e7b44964887830a15e0bbbdd'
+        list_response = json.loads(requests.get(list_url, params={'key': key, "range": "cn"}).text)
+        if list_response["code"] == "200":
+            location_list = list_response["warningLocList"]
+            for warning_location_obj in location_list:
+                warning_location = warning_location_obj["locationId"]
+                try:
+                    settings.location_city["location"].index(warning_location)
+                except ValueError:
+                    continue
+                warning_response = json.loads(
+                    requests.get(warning_url, params={'location': warning_location, "key": key}).text)
+                pprint(warning_response)
+                if warning_response["code"] == "200":
+                    warnings = warning_response["warning"]
+                    for warning in warnings:
+                        if "startTime" not in warning or "endTime" not in warning or OfficialWarning.objects.filter(
+                                id=warning["id"]).exists():
+                            continue
+                        official_warning = OfficialWarning()
+                        official_warning.id = warning["id"]
+                        official_warning.title = warning["title"] + " by api"
+                        official_warning.startTime = datetime.datetime.fromisoformat(warning["startTime"]).strftime(
+                            "%Y-%m-%d %H:%M:%S")
+                        official_warning.endTime = datetime.datetime.fromisoformat(warning["endTime"]).strftime(
+                            "%Y-%m-%d %H:%M:%S")
+                        official_warning.content = warning["text"]
+                        official_warning.address = settings.location_city["city"][
+                            settings.location_city["location"].index(warning_location)]
+                        official_warning.type = warning["typeName"]
+                        official_warning.save()
+                        emails = User.objects.filter(Q(cities__contains=f'{official_warning.address}')).values_list(
+                            'email', flat=True).distinct()
+                        pprint(official_warning)
+                        try:
+                            for email in emails:
+                                send_mail(official_warning.title, official_warning.content, settings.EMAIL_HOST_USER,
+                                          [email], fail_silently=False)
+                        except Exception as ex:
+                            print(ex)
+
+
+    register_events(scheduler)
+    # 启动定时器
+    scheduler.start()
+except Exception as e:
+    print(e)
+
 
 def get_csrf(request):
     if request.method == 'GET':
@@ -398,6 +460,10 @@ def user_warning(request):
             if city_warnings.exists():
                 for warning in city_warnings:
                     warnings.append(warning)
+            city_warnings = OfficialWarning.objects.filter(address=city)
+            if city_warnings.exists():
+                for warning in city_warnings:
+                    warnings.append(warning)
         return JsonResponse({
             "code": 20000,
             "msg": "success",
@@ -406,14 +472,16 @@ def user_warning(request):
                 "address": comp(w.address),
                 "type": w.type,
                 "content": w.content,
-                "warningTime": w.warningTime
+                "warningTime": w.warningTime if isinstance(w, Warning) else w.startTime
             } for w in warnings]
         })
+
 
 def comp(str):
     part = str.split('/')
     del part[-1]
     return part
+
 
 def user_avatar(request):
     if request.method == "POST":
@@ -559,7 +627,7 @@ def createWarn(request):
             str = ""
             for ss in address:
                 str = str + ss + "/"
-            address = str # + "." 不需要分隔符
+            address = str  # + "." 不需要分隔符
             warningTime = json_data['warningTime']
             type = json_data['type']
             content = json_data['content']
@@ -573,16 +641,18 @@ def createWarn(request):
             '''
 
             warning = Warning()
-            warning.title = title
+            warning.title = title + " by weather-us"
             warning.address = address
             warning.warningTime = warningTime
             warning.type = type
             warning.content = content
             try:
                 warning.save()
-                emails = User.objects.filter(Q(cities__contains=f'{address}')).values_list('email', flat=True).distinct()
+                emails = User.objects.filter(Q(cities__contains=f'{address}')).values_list('email',
+                                                                                           flat=True).distinct()
                 try:
-                    send_mail(title, content, settings.EMAIL_HOST_USER, emails, fail_silently=False)
+                    for email in emails:
+                        send_mail(title, content, settings.EMAIL_HOST_USER, email, fail_silently=False)
                 except Exception:
                     return JsonResponse({
                         "code": 100,

@@ -8,7 +8,7 @@ class User(models.Model):
     password = models.CharField(max_length=100, null=False)
     avatar = models.CharField(max_length=200, default='back_static/avatars/default.png')
     phone = models.CharField(max_length=15, null=True)
-    email = models.CharField(max_length=40,null=False,unique=True)
+    email = models.CharField(max_length=40, null=False, unique=True)
     isAdmin = models.BooleanField(default=False)
     cities = models.CharField(max_length=500, null=True, default='')
 
@@ -49,3 +49,13 @@ class EmailVerify(models.Model):
     code = models.CharField(max_length=50, null=False)
     sendType = models.CharField(choices=SEND_TYPE_CHOICES, max_length=50, default='register', null=False)
     sendTime = models.DateTimeField()
+
+
+class OfficialWarning(models.Model):
+    id = models.CharField(primary_key=True, max_length=50)
+    title = models.CharField(max_length=100)
+    startTime = models.CharField(max_length=20)
+    endTime = models.CharField(max_length=20)
+    content = models.CharField(max_length=300)
+    address = models.CharField(max_length=100)
+    type = models.CharField(max_length=50)
