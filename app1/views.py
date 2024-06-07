@@ -31,7 +31,7 @@ try:
         return
         list_url = 'https://api.qweather.com/v7/warning/list'
         warning_url = 'https://api.qweather.com/v7/warning/now'
-        key = 'c61a9a73e7b44964887830a15e0bbbdd'
+        key = '3cdf5414d4c5422abfb6aa6bcf19cbce'
         list_response = json.loads(requests.get(list_url, params={'key': key, "range": "cn"}).text)
         if list_response["code"] == "200":
             location_list = list_response["warningLocList"]
