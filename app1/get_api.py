@@ -124,27 +124,32 @@ def main(adcodes, api_key):
     return result
 import requests
 import json
-import sqlite3
 import schedule
 import time
-
+import MySQLdb
 def fetch_and_store_weather_data():
     api_key = '3cdf5414d4c5422abfb6aa6bcf19cbce'  # 替换为你的API Key
     file_path = '/home//appfile//backend//djangoProject//app1//centers (1).txt'  # 替换为中心文件的路径
 
     # 连接到SQLite数据库
-    conn = sqlite3.connect('/home//appfile//backend//djangoProject//db.sqlite3')
+    conn = MySQLdb.connect(
+        host='localhost',
+        user='root',  # 替换为你的MySQL用户名
+        password='',  # 替换为你的MySQL密码
+        db='weather_db',  # 替换为你的数据库名称
+        charset='utf8mb4'
+    )
     c = conn.cursor()
     c.execute('''
         CREATE TABLE IF NOT EXISTS weather (
-            adcode TEXT PRIMARY KEY,
-            pressure TEXT,
-            temp TEXT,
-            humidity TEXT,
-            precip TEXT,
-            windSpeed TEXT,
-            vis TEXT,
-            cloud TEXT
+            adcode VARCHAR(50) PRIMARY KEY,
+            pressure VARCHAR(255),
+            temp VARCHAR(255),
+            humidity VARCHAR(255),
+            precip VARCHAR(255),
+            windSpeed VARCHAR(255),
+            vis VARCHAR(255),
+            cloud VARCHAR(255)
         )
     ''')
 
@@ -161,7 +166,7 @@ def fetch_and_store_weather_data():
                     if weather_data:
                         c.execute('''
                             REPLACE INTO weather (adcode, pressure, temp, humidity, precip, windSpeed, vis, cloud)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                         ''', (
                             adcode,
                             weather_data["pressure"],
@@ -190,11 +195,17 @@ def retrieve_weather_data(adcodes):
     #result = get_data_from_db(query)
     
     # 将数据存储到缓存中，并设置过期时间（例如 300 秒）
-    conn = sqlite3.connect('/home/appfile/backend/djangoProject/db.sqlite3')
+    conn = MySQLdb.connect(
+        host='localhost',
+        user='root',  # 替换为你的MySQL用户名
+        password='',  # 替换为你的MySQL密码
+        db='weather_db',  # 替换为你的数据库名称
+        charset='utf8mb4'
+    )
     c = conn.cursor()
     weather_data_list = []
     for adcode in adcodes:
-        c.execute('SELECT * FROM weather WHERE adcode = ?', (adcode,))
+        c.execute('SELECT * FROM weather WHERE adcode = %s', (adcode,))
         row = c.fetchone()
         if row:
             weather_data_list.append({

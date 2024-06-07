@@ -25,9 +25,10 @@ try:
     scheduler = BackgroundScheduler()
     scheduler.add_jobstore(DjangoJobStore(), "default")
 
-    @register_job(scheduler, "interval", hours=4, replace_existing=True)
+    @register_job(scheduler, "interval", seconds=10, replace_existing=True)
     def test_job():
         print("begin to update official warning")
+        return
         list_url = 'https://api.qweather.com/v7/warning/list'
         warning_url = 'https://api.qweather.com/v7/warning/now'
         key = 'c61a9a73e7b44964887830a15e0bbbdd'
