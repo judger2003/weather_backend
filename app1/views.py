@@ -103,7 +103,6 @@ def login(request):
         users = User.objects.filter(name=uid, password=real_password)
     print(real_password)
     print(uid)
-    print(User.objects.filter(name=uid).first().isAdmin)
     if users.exists():
         user = users.first()
 
@@ -585,7 +584,8 @@ def createWarn(request):
                 warning.save()
                 emails = User.objects.filter(Q(cities__contains=f'{address}')).values_list('email', flat=True).distinct()
                 try:
-                    send_mail(title, content, settings.EMAIL_HOST_USER, emails, fail_silently=False)
+                    for email in emails:
+                        send_mail(title, content, settings.EMAIL_HOST_USER, [email], fail_silently=False)
                 except Exception:
                     return JsonResponse({
                         "code": 100,
