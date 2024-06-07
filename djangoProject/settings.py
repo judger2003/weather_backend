@@ -70,12 +70,13 @@ WSGI_APPLICATION = "djangoProject.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-        "OPTIONS": {
-            "timeout": 20,
-        }
+       'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'weather_db',
+        'USER': 'root',
+        'PASSWORD': 'ruangong-0602-g5',
+        'HOST': 'localhost',  # 或者 MySQL 主机的地址
+        'PORT': '3306',       # MySQL 端口号
     }
 }
 
